@@ -31,12 +31,10 @@ function validateUser (userId, cb) {
       console.error(err)
       cb(err)
     } else {
-      console.log(user)
-
       if (user.groups && isInUserGroup(user, config.group)) {
         validUsers[userId] = user
         console.log('User is allowed access')
-        cb(null)
+        cb(null, user)
       } else {
         console.log('User did not have correct group')
         cb(new Error('Unauthorized'))
@@ -51,8 +49,7 @@ module.exports = function (req, cb) {
 
   if (token) {
     if (validUsers[token]) {
-      console.log('User is already allowed access')
-      cb(null)
+      cb(null, validUsers[token])
     } else {
       validateUser(token, cb)
     }
