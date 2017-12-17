@@ -22,21 +22,23 @@ var server = http.createServer(function (req, res) {
     }
   }
 
-  validateUser(req, function (err) {
+  validateUser(req, function (err, user) {
     if (err) {
       res.write(config.authErrorMessage)
       res.end()
     } else {
+      req.headers['X-User'] = user.username
       proxy.web(req, res, { target: config.target })
     }
   })
 })
 
 server.on('upgrade', function (req, socket, head) {
-  validateUser(req, function (err) {
+  validateUser(req, function (err, user) {
     if (err) {
       socket.destroy(new Error(config.authErrorMessage))
     } else {
+      req.headers['X-User'] = user.username
       proxy.ws(req, socket, head, { target: config.target })
     }
   })
