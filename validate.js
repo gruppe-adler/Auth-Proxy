@@ -2,16 +2,21 @@ var Cookies = require('cookies')
 var request = require('request')
 
 var config = require('./config')
+var userUrl = config.userUrl || 'https://www.anrop.se/api/users/current'
+var isInUserGroup = function (user, permissibleGroup) {
+  // return user.groups.indexOf(permissibleGroup) !== -1 ||
+  return user.groups.filter(function (group) { return group.name === permissibleGroup }).length > 0
+}
 
 var validUsers = {}
 
 function fetchUser (token, cb) {
   var cookie = request.cookie(config.cookie + '=' + token)
-  var url = 'https://www.anrop.se'
+  var cookieUrl = userUrl.split(/\/[^/]/).shift()
   var jar = request.jar()
-  jar.setCookie(cookie, url)
+  jar.setCookie(cookie, cookieUrl)
 
-  request('https://www.anrop.se/api/users/current', {jar: jar, json: true}, function (err, resp, body) {
+  request(userUrl, {jar: jar, json: true}, function (err, resp, body) {
     if (err) {
       cb(err)
     } else {
@@ -28,7 +33,7 @@ function validateUser (userId, cb) {
     } else {
       console.log(user)
 
-      if (user.groups && user.groups.indexOf(config.group) > -1) {
+      if (user.groups && isInUserGroup(user, config.group)) {
         validUsers[userId] = user
         console.log('User is allowed access')
         cb(null)
