@@ -31,8 +31,6 @@ function validateUser (userId, cb) {
       console.error(err)
       cb(err)
     } else {
-      console.log(user)
-
       if (user.groups && isInUserGroup(user, config.group)) {
         validUsers[userId] = user
         console.log('User is allowed access')
