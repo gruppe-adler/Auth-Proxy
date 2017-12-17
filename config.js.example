@@ -1,8 +1,10 @@
 module.exports = {
+  authErrorMessage: 'Authorize yourself at anrop.se first',
   cookie: 'fusionGppEM_user',
   group: '7',
   port: 3000,
   target: 'http://arma3.anrop.se:3000',
+  userUrl: 'https://www.anrop.se/api/users/current',
   whitelist: [
     {
       method: 'GET',

@@ -12,7 +12,7 @@ var validUsers = {}
 
 function fetchUser (token, cb) {
   var cookie = request.cookie(config.cookie + '=' + token)
-  var cookieUrl = userUrl.split(/\/[^/]/).shift()
+  var cookieUrl = userUrl.split('/').slice(0, 3).join('/')
   var jar = request.jar()
   jar.setCookie(cookie, cookieUrl)
 
