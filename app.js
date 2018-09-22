@@ -7,6 +7,10 @@ config.authErrorMessage = config.authErrorMessage || 'Authorize yourself at anro
 
 var proxy = httpProxy.createProxyServer({})
 
+proxy.on('error', function (err) {
+  console.error(err)
+})
+
 var server = http.createServer(function (req, res) {
   if (config.whitelist) {
     var path = req.url
