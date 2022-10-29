@@ -2,7 +2,6 @@ var Cookies = require('cookies')
 var request = require('request')
 
 var config = require('./config')
-var userUrl = config.userUrl || 'https://www.anrop.se/api/users/current'
 var isInUserGroup = function (user, permissibleGroup) {
   // return user.groups.indexOf(permissibleGroup) !== -1 ||
   return user.groups.filter(function (group) { return group.name === permissibleGroup }).length > 0
@@ -12,15 +11,21 @@ var validUsers = {}
 
 function fetchUser (token, cb) {
   var cookie = request.cookie(config.cookie + '=' + token)
-  var cookieUrl = userUrl.split('/').slice(0, 3).join('/')
+  var cookieUrl = config.apiUrl.split('/').slice(0, 3).join('/')
   var jar = request.jar()
   jar.setCookie(cookie, cookieUrl)
 
-  request(userUrl, {jar: jar, json: true}, function (err, resp, body) {
+  request(config.apiUrl + config.userUri, {jar: jar, json: true}, function (err, resp, targetUserUri) {
     if (err) {
       cb(err)
     } else {
-      cb(null, body)
+      request(config.apiUrl + targetUserUri, {jar: jar, json: true}, function (err, resp, userBody) {
+        if (err) {
+          cb(err)
+        } else {
+          cb(null, userBody)
+        }
+      })
     }
   })
 }
