@@ -1,4 +1,4 @@
-FROM node:4.2.1
+FROM node:current-alpine3.20
 
 # Copy application files
 COPY . /app/
