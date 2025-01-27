@@ -11,4 +11,4 @@ RUN npm install
 CMD ["npm", "start"]
 
 # Declare application port
-EXPOSE 3000
+EXPOSE 80
