@@ -27,9 +27,13 @@ function fetchUser (token, cb) {
   }, function (err, resp, body) {
     if (err) {
       cb(err)
+    } else if (body && body.errors) {
+      console.error('GraphQL error:', body.errors)
+      cb(new Error('GraphQL request failed'))
     } else if (body && body.data && body.data.authenticate) {
       cb(null, body.data.authenticate)
     } else {
+      console.error('Authentication failed: not authenticated')
       cb(new Error('Not authenticated'))
     }
   })
