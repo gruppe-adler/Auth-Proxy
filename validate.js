@@ -5,7 +5,7 @@ var config = require('./config')
 var userUrl = config.userUrl || 'https://www.anrop.se/api/users/current'
 var isInUserGroup = function (user, permissibleGroup) {
   // return user.groups.indexOf(permissibleGroup) !== -1 ||
-  return user.groups.filter(function (group) { return group.name === permissibleGroup }).length > 0
+  return user.groups.filter(function (group) { return group.tag === permissibleGroup }).length > 0
 }
 
 var validUsers = {}
@@ -16,11 +16,21 @@ function fetchUser (token, cb) {
   var jar = request.jar()
   jar.setCookie(cookie, cookieUrl)
 
-  request(userUrl, {jar: jar, json: true}, function (err, resp, body) {
+  request(userUrl, {
+    method: 'POST',
+    jar: jar,
+    json: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: {
+      query: 'mutation { authenticate { id username avatar admin groups { id tag color label hidden } } }'
+    }
+  }, function (err, resp, body) {
     if (err) {
       cb(err)
+    } else if (body && body.data && body.data.authenticate) {
+      cb(null, body.data.authenticate)
     } else {
-      cb(null, body)
+      cb(new Error('Not authenticated'))
     }
   })
 }
